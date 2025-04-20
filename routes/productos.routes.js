@@ -1,5 +1,15 @@
 import express from 'express';
-import productos from '../data/productos.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cargar el archivo productos.json
+const productosFilePath = path.join(__dirname, '../data/productos.json');
+let productos = JSON.parse(fs.readFileSync(productosFilePath, 'utf-8'));
+
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -11,11 +21,11 @@ router.get('/:id', (req, res) => {
   if (producto) {
     res.json(producto);
   } else {
-    res.status(404).json({ message: 'Producto no encontrado'});
+    res.status(404).json({ message: 'Producto no encontrado' });
   }
 });
 
-// POST - Crear un nuevo producto
+
 router.post('/', (req, res) => {
   const { nombre, descripcion, precio, imagen, activo } = req.body;
   const nuevoProducto = {
@@ -26,7 +36,12 @@ router.post('/', (req, res) => {
     imagen,
     activo
   };
+
   productos.push(nuevoProducto);
+  
+  // Guardar los productos actualizados en el archivo
+  fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2));
+
   res.status(201).json(nuevoProducto);
 });
 
@@ -40,7 +55,12 @@ router.post('/activo', (req, res) => {
     imagen,
     activo: true
   };
+
   productos.push(nuevoProducto);
+  
+  // Guardar los productos actualizados en el archivo
+  fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2));
+
   res.status(201).json(nuevoProducto);
 });
 
@@ -61,9 +81,11 @@ router.put('/:id', (req, res) => {
     activo
   };
 
+  // Guardar los productos actualizados en el archivo
+  fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2));
+
   res.json(productos[productoIndex]);
 });
-
 
 router.delete('/:id', (req, res) => {
   const productoIndex = productos.findIndex(p => p.id === parseInt(req.params.id));
@@ -73,6 +95,10 @@ router.delete('/:id', (req, res) => {
   }
 
   productos.splice(productoIndex, 1);
+  
+  // Guardar los productos actualizados en el archivo
+  fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2));
+
   res.status(200).json({ message: 'Producto eliminado correctamente' });
 });
 
