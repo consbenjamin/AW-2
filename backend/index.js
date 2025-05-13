@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import productosRoutes from './routes/productos.routes.js';
 import usuariosRoutes from './routes/usuarios.routes.js';
 import ventasRoutes from './routes/ventas.routes.js';
@@ -7,7 +8,12 @@ import ventasRoutes from './routes/ventas.routes.js';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 5000;
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 
 app.use(express.json());
 

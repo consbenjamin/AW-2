@@ -13,8 +13,18 @@ let productos = JSON.parse(fs.readFileSync(productosFilePath, 'utf-8'));
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.json(productos);
+  const { categoria } = req.query;
+
+  let resultado = productos;
+
+  if (categoria) {
+    resultado = resultado.filter(p => 
+      p.categoria?.toLowerCase() === categoria.toLowerCase()
+    );
+  }
+  res.json(resultado);
 });
+
 
 router.get('/:id', (req, res) => {
   const producto = productos.find(p => p.id === parseInt(req.params.id));
@@ -58,7 +68,6 @@ router.post('/activo', (req, res) => {
 
   productos.push(nuevoProducto);
   
-  // Guardar los productos actualizados en el archivo
   fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2));
 
   res.status(201).json(nuevoProducto);
@@ -81,7 +90,6 @@ router.put('/:id', (req, res) => {
     activo
   };
 
-  // Guardar los productos actualizados en el archivo
   fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2));
 
   res.json(productos[productoIndex]);
@@ -96,7 +104,6 @@ router.delete('/:id', (req, res) => {
 
   productos.splice(productoIndex, 1);
   
-  // Guardar los productos actualizados en el archivo
   fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2));
 
   res.status(200).json({ message: 'Producto eliminado correctamente' });

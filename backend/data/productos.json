@@ -1,0 +1,47 @@
+[
+  {
+    "id": 101,
+    "nombre": "Laptop Lenovo",
+    "descripcion": "Laptop 15.6'' AMD Ryzen 7, 16GB RAM, 512GB SSD",
+    "precio": 650000,
+    "imagen": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "activo": true,
+    "categoria": "laptops"
+  },
+  {
+    "id": 102,
+    "nombre": "Smartphone Samsung Galaxy A54",
+    "descripcion": "Pantalla Super AMOLED 6.4'', 128GB, 5G",
+    "precio": 350000,
+    "imagen": "https://images.unsplash.com/photo-1715371941219-a6e6bf41dc21?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "activo": true,
+    "categoria": "smartphones"
+  },
+  {
+    "id": 103,
+    "nombre": "Mouse Logitech M720",
+    "descripcion": "Mouse inalámbrico multi-dispositivo",
+    "precio": 45000,
+    "imagen": "https://images.unsplash.com/photo-1618499890638-3a0dd4b278b7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "activo": true,
+    "categoria": "perifericos"
+  },
+  {
+    "id": 4,
+    "nombre": "Teclado Mecánico RGB",
+    "descripcion": "Teclado mecánico con retroiluminación RGB y switches Cherry MX",
+    "precio": 120000,
+    "imagen": "https://images.unsplash.com/photo-1626958390898-162d3577f293?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "activo": true,
+    "categoria": "perifericos"
+  },
+  {
+    "id": 5,
+    "nombre": "Apple iPhone 15",
+    "descripcion": "Smartphone 6.1'' Super Retina XDR, 128GB",
+    "precio": 900000,
+    "imagen": "https://plus.unsplash.com/premium_photo-1680985551009-05107cd2752c?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "activo": true,
+    "categoria": "smartphones"
+  }
+]
