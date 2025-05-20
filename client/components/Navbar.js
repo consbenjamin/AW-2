@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { ShoppingCart, X, Plus, Minus, Menu } from "lucide-react";
+import { ShoppingCart, X, Plus, Minus, Menu, User, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation"
 
 export default function Navbar({
   carrito,
@@ -14,9 +15,15 @@ export default function Navbar({
   calcularTotal,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [username, setUsername] = useState(null)
   const cartRef = useRef(null)
+  const router = useRouter()
 
   useEffect(() => {
+    const storedUsername = localStorage.getItem('username')
+    if (storedUsername) {
+      setUsername(storedUsername)
+    }
     function handleClickOutside(event) {
       if (cartRef.current && !cartRef.current.contains(event.target)) {
         setIsCartOpen(false)
@@ -63,6 +70,35 @@ export default function Navbar({
 
           {/* Cart - Desktop */}
           <div className="flex items-center space-x-4">
+            {/* Mostrar usuario si está logeado */}
+            {username ? (
+              <div className="flex items-center space-x-3 text-gray-300">
+                <div className="flex items-center space-x-2">
+                  <User size={20} />
+                  <span className="hidden sm:inline">{username}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("token")
+                    localStorage.removeItem("username")
+                    setUsername(null)
+                    window.location.href = "/"
+                  }}
+                  className="hover:text-red-500 transition-colors"
+                  title="Cerrar sesión"
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                Iniciar sesión
+              </Link>
+            )}
+
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
               className="relative p-2 rounded-full hover:bg-gray-800 transition-colors"

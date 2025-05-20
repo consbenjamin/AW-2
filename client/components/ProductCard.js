@@ -63,7 +63,7 @@ export default function ProductCard({ producto, onAgregar }) {
 
           <button
             onClick={() => onAgregar(producto)}
-            className="flex items-center justify-center bg-cyan-600 hover:bg-cyan-700 text-white p-2 rounded-full transition-colors"
+            className="flex items-center justify-center bg-cyan-600 hover:bg-cyan-700 text-white p-2 rounded-full transition-colors cursor-pointer"
             aria-label="Agregar al carrito"
           >
             <ShoppingCart size={18} />

@@ -71,25 +71,53 @@ export default function Home() {
     localStorage.setItem("carrito", JSON.stringify(nuevoCarrito))
   }
 
+  
+
   const realizarCompra = async () => {
+    const usuario = localStorage.getItem("username");
+    const userId = localStorage.getItem("user_id");
+
+    if (!usuario || !userId) {
+      alert("Debes estar logueado para comprar");
+      return;
+    }
+
+    const productos = carrito.map(item => ({
+      id: item.id,
+      cantidad: item.cantidad || 1,
+      precio_unitario: item.precio
+    }));
+
+    const venta = {
+      id_usuario: parseInt(userId),
+      fecha: new Date().toISOString(),
+      total: calcularTotal(),
+      direccion: "Av. Siempre Viva 742, Buenos Aires",
+      productosVendidos: productos // <- este nombre es clave
+    };
+
+    console.log(venta);
+
     try {
       const res = await fetch("http://localhost:5000/ventas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productos: carrito }),
-      })
+        body: JSON.stringify(venta)
+      });
 
-      if (!res.ok) throw new Error("Error al generar orden")
+      if (!res.ok) throw new Error("Error al generar orden");
 
-      alert("Compra realizada con éxito")
-      setCarrito([])
-      localStorage.removeItem("carrito")
-      setIsCartOpen(false)
+      alert("Compra realizada con éxito");
+      setCarrito([]);
+      localStorage.removeItem("carrito");
+      setIsCartOpen(false);
+      window.location.href = "/gracias";
     } catch (err) {
-      console.error(err)
-      alert("Hubo un problema al generar la orden")
+      console.error(err);
+      alert("Hubo un problema al generar la orden");
     }
-  }
+  };
+
 
   const calcularTotal = () => {
     return carrito.reduce((total, producto) => {
@@ -116,7 +144,7 @@ export default function Home() {
             </h1>
             <div className="flex items-center bg-white rounded-lg shadow-sm p-1">
               <select
-                className="bg-transparent border-none py-2 px-3 rounded-lg focus:outline-none text-gray-700 appearance-none"
+                className="bg-transparent border-none py-2 px-3 rounded-lg focus:outline-none text-gray-700 appearance-none cursor-pointer"
                 onChange={(e) => setCategoria(e.target.value)}
                 value={categoria}
               >
