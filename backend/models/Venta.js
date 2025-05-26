@@ -1,4 +1,3 @@
-// models/Venta.js
 import mongoose from 'mongoose';
 
 const ventaSchema = new mongoose.Schema({

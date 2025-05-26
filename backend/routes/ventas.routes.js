@@ -5,7 +5,7 @@ import Producto from '../models/Producto.js';
 
 const router = express.Router();
 
-// Obtener todas las ventas
+
 router.get('/', async (req, res) => {
   try {
     const ventas = await Venta.find().populate('id_usuario').populate('productos.id');
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener una venta por ID
+
 router.get('/:id', async (req, res) => {
   try {
     const venta = await Venta.findById(req.params.id).populate('id_usuario').populate('productos.id');
@@ -26,7 +26,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Crear nueva venta
+
 router.post('/', async (req, res) => {
   try {
     const { id_usuario, fecha, total, direccion, productosVendidos } = req.body;
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Crear nueva venta solo con productos activos
+
 router.post('/activa', async (req, res) => {
   try {
     const { id_usuario, fecha, total, direccion, productosVendidos } = req.body;
@@ -82,7 +82,7 @@ router.post('/activa', async (req, res) => {
   }
 });
 
-// Actualizar una venta
+
 router.put('/:id', async (req, res) => {
   try {
     const { id_usuario, fecha, total, direccion, productosVendidos } = req.body;
@@ -109,7 +109,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Eliminar una venta
+
 router.delete('/:id', async (req, res) => {
   try {
     const ventaEliminada = await Venta.findByIdAndDelete(req.params.id);

@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obtener un usuario por ID
+
 router.get('/:id', async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.params.id).select('-password');
@@ -84,7 +84,7 @@ router.post('/auth', async (req, res) => {
   }
 });
 
-// Actualizar usuario
+
 router.put('/:id', async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
 
@@ -105,7 +105,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Eliminar usuario y sus ventas asociadas
+
 router.delete('/:id', async (req, res) => {
   try {
     const eliminado = await Usuario.findByIdAndDelete(req.params.id);
