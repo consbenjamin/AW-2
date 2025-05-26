@@ -71,8 +71,6 @@ export default function Home() {
     localStorage.setItem("carrito", JSON.stringify(nuevoCarrito))
   }
 
-  
-
   const realizarCompra = async () => {
     const usuario = localStorage.getItem("username");
     const userId = localStorage.getItem("user_id");

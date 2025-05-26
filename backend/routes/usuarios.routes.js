@@ -1,35 +1,29 @@
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { fileURLToPath } from 'url';
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Cargar el archivo usuarios.json
-const usuariosFilePath = path.join(__dirname, '../data/usuarios.json');
-let usuarios = JSON.parse(fs.readFileSync(usuariosFilePath, 'utf-8'));
-
-// Cargar el archivo ventas.json
-const ventasFilePath = path.join(__dirname, '../data/ventas.json');
-let ventas = JSON.parse(fs.readFileSync(ventasFilePath, 'utf-8'));
+import Usuario from '../models/Usuario.js';
+import Venta from '../models/Venta.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.json(usuarios.map(({ password, ...rest }) => rest)); // ocultar passwords
+// Obtener todos los usuarios (sin contraseña)
+router.get('/', async (req, res) => {
+  try {
+    const usuarios = await Usuario.find().select('-password');
+    res.json(usuarios);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener usuarios' });
+  }
 });
 
-router.get('/:id', (req, res) => {
-  const usuario = usuarios.find(u => u.id === parseInt(req.params.id));
-  if (usuario) {
-    const { password, ...data } = usuario;
-    res.json(data);
-  } else {
-    res.status(404).json({ message: 'Usuario no encontrado' });
+// Obtener un usuario por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.params.id).select('-password');
+    if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
+    res.json(usuario);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener usuario' });
   }
 });
 
@@ -37,95 +31,92 @@ router.get('/:id', (req, res) => {
 router.post('/', async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
 
-  const usuarioExistente = usuarios.find(u => u.email === email);
-  if (usuarioExistente) {
-    return res.status(400).json({ message: 'Ya existe un usuario con ese email' });
+  try {
+    const existente = await Usuario.findOne({ email });
+    if (existente) return res.status(400).json({ message: 'Ya existe un usuario con ese email' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const nuevoUsuario = new Usuario({
+      nombre,
+      apellido,
+      email,
+      password: hashedPassword
+    });
+
+    await nuevoUsuario.save();
+    res.status(201).json({ message: 'Usuario registrado correctamente' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al registrar usuario' });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const nuevoUsuario = {
-    id: usuarios.length + 1,
-    nombre,
-    apellido,
-    email,
-    password: hashedPassword
-  };
-
-  usuarios.push(nuevoUsuario);
-  fs.writeFileSync(usuariosFilePath, JSON.stringify(usuarios, null, 2));
-
-  res.status(201).json({ message: 'Usuario registrado correctamente' });
 });
 
 // Login
 router.post('/auth', async (req, res) => {
   const JWT_SECRET = process.env.JWT_SECRET;
   const { email, password } = req.body;
-  
-  const usuario = usuarios.find(u => u.email === email);
-  if (!usuario) {
-    return res.status(401).json({ message: 'Credenciales incorrectas' });
-  }
-  
-  const match = await bcrypt.compare(password, usuario.password);
-  if (!match) {
-    return res.status(401).json({ message: 'Credenciales incorrectas' });
-  }
 
-  const token = jwt.sign(
-    { id: usuario.id, nombre: usuario.nombre, apellido: usuario.apellido },
-    JWT_SECRET,
-    { expiresIn: '1h' }
-  );
+  try {
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) return res.status(401).json({ message: 'Credenciales incorrectas' });
 
-  res.json({ message: 'Autenticación exitosa', 
-    token,
-    user: { 
-      id: usuario.id, 
-      nombre: usuario.nombre, 
-      apellido: usuario.apellido, 
-      email: usuario.email }
-  });
+    const match = await bcrypt.compare(password, usuario.password);
+    if (!match) return res.status(401).json({ message: 'Credenciales incorrectas' });
+
+    const token = jwt.sign(
+      { id: usuario._id, nombre: usuario.nombre, apellido: usuario.apellido },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({
+      message: 'Autenticación exitosa',
+      token,
+      user: {
+        id: usuario._id,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        email: usuario.email
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al autenticar usuario' });
+  }
 });
 
-// Modificar usuario
+// Actualizar usuario
 router.put('/:id', async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
-  const usuarioIndex = usuarios.findIndex(u => u.id === parseInt(req.params.id));
 
-  if (usuarioIndex === -1) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const actualizado = await Usuario.findByIdAndUpdate(
+      req.params.id,
+      { nombre, apellido, email, password: hashedPassword },
+      { new: true }
+    );
+
+    if (!actualizado) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    res.json({ message: 'Usuario actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al actualizar usuario' });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  usuarios[usuarioIndex] = {
-    id: parseInt(req.params.id),
-    nombre,
-    apellido,
-    email,
-    password: hashedPassword
-  };
-
-  fs.writeFileSync(usuariosFilePath, JSON.stringify(usuarios, null, 2));
-  res.json({ message: 'Usuario actualizado correctamente' });
 });
 
-// Eliminar usuario (y sus ventas asociadas)
-router.delete('/:id', (req, res) => {
-  const usuarioIndex = usuarios.findIndex(u => u.id === parseInt(req.params.id));
-  if (usuarioIndex === -1) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
+// Eliminar usuario y sus ventas asociadas
+router.delete('/:id', async (req, res) => {
+  try {
+    const eliminado = await Usuario.findByIdAndDelete(req.params.id);
+    if (!eliminado) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    await Venta.deleteMany({ id_usuario: req.params.id });
+
+    res.json({ message: 'Usuario y ventas asociadas eliminadas correctamente' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al eliminar usuario' });
   }
-
-  const id_usuario = parseInt(req.params.id);
-  ventas = ventas.filter(venta => venta.id_usuario !== id_usuario);
-  fs.writeFileSync(ventasFilePath, JSON.stringify(ventas, null, 2));
-
-  usuarios.splice(usuarioIndex, 1);
-  fs.writeFileSync(usuariosFilePath, JSON.stringify(usuarios, null, 2));
-
-  res.status(200).json({ message: 'Usuario y ventas asociadas eliminadas correctamente' });
 });
 
 export default router;
