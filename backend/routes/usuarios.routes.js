@@ -28,7 +28,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Registro
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
 
   try {
