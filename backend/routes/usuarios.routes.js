@@ -89,11 +89,16 @@ router.put('/:id', async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const updateFields = { nombre, apellido, email };
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.password = hashedPassword;
+    }
 
     const actualizado = await Usuario.findByIdAndUpdate(
       req.params.id,
-      { nombre, apellido, email, password: hashedPassword },
+      updateFields,
       { new: true }
     );
 
@@ -104,6 +109,7 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar usuario' });
   }
 });
+
 
 
 router.delete('/:id', async (req, res) => {

@@ -1,7 +1,9 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Venta from '../models/Venta.js';
 import Usuario from '../models/Usuario.js';
 import Producto from '../models/Producto.js';
+
 
 const router = express.Router();
 
@@ -31,12 +33,23 @@ router.post('/', async (req, res) => {
   try {
     const { id_usuario, fecha, total, direccion, productosVendidos } = req.body;
 
+    if (!mongoose.Types.ObjectId.isValid(id_usuario)) {
+      return res.status(400).json({ message: 'ID de usuario inválido' });
+    }
+
     const usuario = await Usuario.findById(id_usuario);
     if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    const productosFormateados = [];
 
     for (const item of productosVendidos) {
       const producto = await Producto.findById(item.id);
       if (!producto) return res.status(404).json({ message: `Producto con ID ${item.id} no encontrado` });
+
+      productosFormateados.push({
+        id: new mongoose.Types.ObjectId(item.id),
+        cantidad: item.cantidad
+      });
     }
 
     const nuevaVenta = new Venta({
@@ -44,15 +57,17 @@ router.post('/', async (req, res) => {
       fecha,
       total,
       direccion,
-      productos: productosVendidos
+      productos: productosFormateados
     });
 
     await nuevaVenta.save();
     res.status(201).json(nuevaVenta);
   } catch (error) {
-    res.status(500).json({ message: 'Error al crear la venta', error });
+    console.error("❌ Error al crear la venta:", error);
+    res.status(500).json({ message: 'Error al crear la venta', error: error.message });
   }
 });
+
 
 
 router.post('/activa', async (req, res) => {

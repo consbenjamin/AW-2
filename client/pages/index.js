@@ -37,21 +37,25 @@ export default function Home() {
   }, [])
 
   const agregarAlCarrito = (producto) => {
-    const productoExistente = carrito.find((item) => item.id === producto.id)
+    
+    const productoExistente = carrito.find((item) => item.id === producto._id);
 
-    let nuevoCarrito
+    let nuevoCarrito;
     if (productoExistente) {
       nuevoCarrito = carrito.map((item) =>
-        item.id === producto.id ? { ...item, cantidad: (item.cantidad || 1) + 1 } : item,
-      )
+        item.id === producto._id
+          ? { ...item, cantidad: (item.cantidad || 1) + 1 }
+          : item,
+      );
     } else {
-      nuevoCarrito = [...carrito, { ...producto, cantidad: 1 }]
+      nuevoCarrito = [...carrito, { ...producto, id: producto._id, cantidad: 1 }];
     }
 
-    setCarrito(nuevoCarrito)
-    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito))
-    setIsCartOpen(true)
-  }
+    setCarrito(nuevoCarrito);
+    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
+    setIsCartOpen(true);
+  };
+
 
   const eliminarDelCarrito = (productoId) => {
     const nuevoCarrito = carrito.filter((item) => item.id !== productoId)
@@ -87,11 +91,11 @@ export default function Home() {
     }));
 
     const venta = {
-      id_usuario: parseInt(userId),
+      id_usuario: userId,
       fecha: new Date().toISOString(),
       total: calcularTotal(),
       direccion: "Av. Siempre Viva 742, Buenos Aires",
-      productosVendidos: productos // <- este nombre es clave
+      productosVendidos: productos
     };
 
     console.log(venta);
@@ -103,13 +107,16 @@ export default function Home() {
         body: JSON.stringify(venta)
       });
 
+      const data = await res.json(); 
+      console.log("Respuesta del servidor:", data);
+      
       if (!res.ok) throw new Error("Error al generar orden");
 
       alert("Compra realizada con éxito");
       setCarrito([]);
       localStorage.removeItem("carrito");
       setIsCartOpen(false);
-      window.location.href = "/gracias";
+      window.location.href = `/pedido?id=${data._id}`;
     } catch (err) {
       console.error(err);
       alert("Hubo un problema al generar la orden");

@@ -73,10 +73,13 @@ export default function Navbar({
             {/* Mostrar usuario si está logeado */}
             {username ? (
               <div className="flex items-center space-x-3 text-gray-300">
-                <div className="flex items-center space-x-2">
-                  <User size={20} />
+                <button
+                  onClick={() => router.push("/perfil")}
+                  className="flex items-center space-x-2 hover:text-green-500 transition-colors cursor-pointer" 
+                >
+                  <User size={20}/>
                   <span className="hidden sm:inline">{username}</span>
-                </div>
+                </button>
                 <button
                   onClick={() => {
                     localStorage.removeItem("token")
