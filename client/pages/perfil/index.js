@@ -99,7 +99,7 @@ export default function Perfil() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
       <div className="max-w-2xl mx-auto space-y-8">
-        {/* Header Profile Card */}
+        {/* Header Card */}
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-24"></div>
           <div className="px-8 pb-8 -mt-12 relative">
@@ -122,7 +122,7 @@ export default function Perfil() {
           </div>
         </div>
 
-        {/* Profile Information Card */}
+        {/* Profile Card */}
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
           <div className="flex items-center justify-between mb-6">
             <div>

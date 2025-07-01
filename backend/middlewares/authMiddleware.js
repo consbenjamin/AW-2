@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -6,7 +8,7 @@ export const verificarToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Token requerido. Usa el formato: Bearer <token>' });
+    return res.status(401).json({ message: 'Token requerido.' });
   }
 
   const token = authHeader.split(' ')[1];

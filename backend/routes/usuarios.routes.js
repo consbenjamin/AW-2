@@ -3,11 +3,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Usuario from '../models/Usuario.js';
 import Venta from '../models/Venta.js';
+import { verificarToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 // Obtener todos los usuarios (sin contraseña)
-router.get('/', async (req, res) => {
+router.get('/', verificarToken, async (req, res) => {
   try {
     const usuarios = await Usuario.find().select('-password');
     res.json(usuarios);
@@ -85,7 +86,7 @@ router.post('/auth', async (req, res) => {
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', verificarToken, async (req, res) => {
   const { nombre, apellido, email, password } = req.body;
 
   try {
@@ -112,7 +113,7 @@ router.put('/:id', async (req, res) => {
 
 
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verificarToken, async (req, res) => {
   try {
     const eliminado = await Usuario.findByIdAndDelete(req.params.id);
     if (!eliminado) return res.status(404).json({ message: 'Usuario no encontrado' });
