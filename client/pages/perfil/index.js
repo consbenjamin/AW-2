@@ -21,14 +21,28 @@ export default function Perfil() {
       return
     }
 
+    const token = localStorage.getItem("token")
+    if (!token) {
+      router.push("/login")
+      return
+    }
+
     const fetchUsuario = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/usuarios/${userId}`)
+        const res = await fetch(`http://localhost:5000/usuarios/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+
+        if (!res.ok) {
+          throw new Error("No autorizado o error al obtener usuario")
+        }
+
         const data = await res.json()
         setUsuario(data)
         setForm({ nombre: data.nombre, apellido: data.apellido || "", email: data.email, password: "" })
       } catch (error) {
         console.error("Error al obtener usuario", error)
+        router.push("/login")
       } finally {
         setLoading(false)
       }

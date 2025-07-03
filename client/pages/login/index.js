@@ -28,6 +28,7 @@ export default function Login() {
       localStorage.setItem("token", data.token)
       localStorage.setItem("username", data.user.nombre)
       localStorage.setItem("user_id", data.user.id)
+      localStorage.setItem("role", data.user.role)
 
       router.push("/")
     } catch (err) {

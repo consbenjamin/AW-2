@@ -84,6 +84,8 @@ export default function Navbar({
                   onClick={() => {
                     localStorage.removeItem("token")
                     localStorage.removeItem("username")
+                    localStorage.removeItem("user_id")
+                    localStorage.removeItem("role")
                     setUsername(null)
                     window.location.href = "/"
                   }}

@@ -1,4 +1,6 @@
 import express from 'express';
+import { verificarToken } from '../middlewares/authMiddleware.js';
+import { esAdmin } from '../middlewares/authMiddleware.js';
 import Producto from '../models/Producto.js';
 
 const router = express.Router();
@@ -26,7 +28,7 @@ router.get('/:id', async (req, res) => {
 });
 
 
-router.post('/', async (req, res) => {
+router.post('/', verificarToken, esAdmin, async (req, res) => {
   try {
     const nuevoProducto = new Producto(req.body);
     const saved = await nuevoProducto.save();
@@ -37,7 +39,7 @@ router.post('/', async (req, res) => {
 });
 
 
-router.post('/activo', async (req, res) => {
+router.post('/activo', verificarToken, esAdmin, async (req, res) => {
   try {
     const nuevoProducto = new Producto({ ...req.body, activo: true });
     const saved = await nuevoProducto.save();
@@ -48,7 +50,7 @@ router.post('/activo', async (req, res) => {
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', verificarToken, esAdmin, async (req, res) => {
   try {
     const actualizado = await Producto.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!actualizado) return res.status(404).json({ message: 'Producto no encontrado' });
@@ -59,7 +61,7 @@ router.put('/:id', async (req, res) => {
 });
 
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verificarToken, esAdmin, async (req, res) => {
   try {
     const eliminado = await Producto.findByIdAndDelete(req.params.id);
     if (!eliminado) return res.status(404).json({ message: 'Producto no encontrado' });

@@ -3,12 +3,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Usuario from '../models/Usuario.js';
 import Venta from '../models/Venta.js';
-import { verificarToken } from '../middlewares/authMiddleware.js';
+import { verificarToken, esAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 // Obtener todos los usuarios (sin contraseña)
-router.get('/', verificarToken, async (req, res) => {
+router.get('/', verificarToken, esAdmin, async (req, res) => {
   try {
     const usuarios = await Usuario.find().select('-password');
     res.json(usuarios);
@@ -65,7 +65,7 @@ router.post('/auth', async (req, res) => {
     if (!match) return res.status(401).json({ message: 'Credenciales incorrectas' });
 
     const token = jwt.sign(
-      { id: usuario._id, nombre: usuario.nombre, apellido: usuario.apellido },
+      { id: usuario._id, nombre: usuario.nombre, apellido: usuario.apellido,  role: usuario.role },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -77,7 +77,8 @@ router.post('/auth', async (req, res) => {
         id: usuario._id,
         nombre: usuario.nombre,
         apellido: usuario.apellido,
-        email: usuario.email
+        email: usuario.email,
+        role: usuario.role,
       }
     });
   } catch (err) {
@@ -118,7 +119,7 @@ router.put('/:id', verificarToken, async (req, res) => {
 
 
 
-router.delete('/:id', verificarToken, async (req, res) => {
+router.delete('/:id', verificarToken, esAdmin, async (req, res) => {
   try {
     const eliminado = await Usuario.findByIdAndDelete(req.params.id);
     if (!eliminado) return res.status(404).json({ message: 'Usuario no encontrado' });
