@@ -93,6 +93,10 @@ export default function Perfil() {
     try {
       const res = await fetch(`http://localhost:5000/usuarios/${userId}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
       })
 
       if (!res.ok) throw new Error("Error al eliminar usuario")

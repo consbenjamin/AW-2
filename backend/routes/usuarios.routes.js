@@ -119,7 +119,7 @@ router.put('/:id', verificarToken, async (req, res) => {
 
 
 
-router.delete('/:id', verificarToken, esAdmin, async (req, res) => {
+router.delete('/:id', verificarToken, async (req, res) => {
   try {
     const eliminado = await Usuario.findByIdAndDelete(req.params.id);
     if (!eliminado) return res.status(404).json({ message: 'Usuario no encontrado' });

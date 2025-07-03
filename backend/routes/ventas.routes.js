@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
       if (!producto) return res.status(404).json({ message: `Producto con ID ${item.id} no encontrado` });
 
       productosFormateados.push({
-        id: new mongoose.Types(item.id),
+        id: new mongoose.Types.ObjectId(item.id),
         cantidad: item.cantidad
       });
     }
