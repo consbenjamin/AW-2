@@ -46,13 +46,24 @@ export default function Perfil() {
     setUpdating(true)
 
     try {
+      const token = localStorage.getItem("token")
+
+      if (!token) {
+        throw new Error("No se encontró el token");
+      }
+
       const res = await fetch(`http://localhost:5000/usuarios/${userId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(form),
       })
 
       if (!res.ok) throw new Error("Error al actualizar usuario")
+
+      localStorage.setItem("username", `${form.nombre}`)
 
       setEditando(false)
       setUsuario({ ...usuario, ...form })

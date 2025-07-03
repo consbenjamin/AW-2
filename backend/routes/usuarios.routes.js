@@ -18,7 +18,7 @@ router.get('/', verificarToken, async (req, res) => {
 });
 
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', verificarToken, async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.params.id).select('-password');
     if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
@@ -87,7 +87,12 @@ router.post('/auth', async (req, res) => {
 
 
 router.put('/:id', verificarToken, async (req, res) => {
+  
   const { nombre, apellido, email, password } = req.body;
+
+  if (req.user.id !== req.params.id) {
+    return res.status(403).json({ message: 'No autorizado para modificar este usuario' });
+  }
 
   try {
     const updateFields = { nombre, apellido, email };
