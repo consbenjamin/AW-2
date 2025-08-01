@@ -98,8 +98,6 @@ export default function Home() {
       productosVendidos: productos
     };
 
-    console.log(venta);
-
     try {
       const res = await fetch("http://localhost:5000/ventas", {
         method: "POST",
@@ -108,7 +106,6 @@ export default function Home() {
       });
 
       const data = await res.json(); 
-      console.log("Respuesta del servidor:", data);
       
       if (!res.ok) throw new Error("Error al generar orden");
 
