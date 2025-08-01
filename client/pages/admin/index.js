@@ -21,7 +21,7 @@ export default function AdminDashboard() {
       return
     }
 
-    fetch("http://localhost:5000/productos", {
+    fetch("http://localhost:5000/productos/admin", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

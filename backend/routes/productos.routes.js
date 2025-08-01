@@ -8,13 +8,28 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { categoria } = req.query;
-    const query = categoria ? { categoria: categoria.toLowerCase() } : {};
+
+    const query = {
+      activo: true,
+      ...(categoria && { categoria: categoria.toLowerCase() })
+    };
+
     const productos = await Producto.find(query);
     res.json(productos);
   } catch (err) {
     res.status(500).json({ message: 'Error al obtener productos' });
   }
 });
+
+router.get('/admin', verificarToken, esAdmin, async (req, res) => {
+  try {
+    const productos = await Producto.find();
+    res.json(productos);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener productos para el admin' });
+  }
+});
+
 
 
 router.get('/:id', async (req, res) => {
